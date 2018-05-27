@@ -93,17 +93,7 @@
         reload: yes
 
 
-    - name: Install FirewallD
-      package:
-        name: firewalld
-        state: latest
 
-
-    - name: Enable and start FirewallD service
-      service:
-        name: firewalld
-        state: started
-        enabled: yes
 
 ## Configure WireGuard
     
@@ -132,17 +122,11 @@
         mode: 0600
         force: no
 
-## Add WireGuard service to FirewallD services
+## Manage the firewall if we're gonna
+    - import_tasks: firewall.yml
+      when: manage_firewall
 
-    - name: Add WireGuard as a service to FirewallD
-      template:
-        src: wireguard.xml.j2
-        dest: /etc/firewalld/services/wireguard.xml
-        owner: root
-        group: root
-        mode: 0600
-        force: no
-
+      
 ## Reboot server to load latest kernel
 
     - name: Reboot server
