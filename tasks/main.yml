@@ -122,8 +122,9 @@
         mode: 0600
         force: no
 
-## Manage the firewall if we're gonna
-    - import_tasks: firewall.yml
+## Set up the firewall if we're gonna
+    - name: Set up the firewall
+      import_tasks: firewall-setup.yml
       when: manage_firewall
 
       
@@ -145,34 +146,10 @@
       shell: apt install -y linux-headers-`uname -r`
       when: ansible_os_family == 'Debian'
 
-##  Allow WireGuard service, add network interface on firewall and enable masquerading
-
-    - name: Allow WireGuard service for FirewallD public zone
-      firewalld:
-        zone: public
-        service: wireguard
-        state: enabled
-        permanent: yes
-        immediate: yes
-
-
-    - name: Add WireGuard interface to FirewallD public zone
-      firewalld:
-        zone: public
-        interface: wg0
-        state: enabled
-        permanent: yes
-        immediate: yes
-
-
-    - name: Enable Masquerading
-      firewalld:
-        zone: public
-        masquerade: yes
-        state: enabled
-        permanent: yes
-        immediate: yes
-        
+## Enable the firewall if it isn't already
+    - name: Enable the firewall
+      import_tasks: firewall-enable.yml
+      when: manage_firewall
 
 ## Enable WireGuard kernel module and start service
 
